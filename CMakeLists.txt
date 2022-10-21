@@ -37,3 +37,5 @@ add_executable(push push.cpp)
 target_link_libraries(push PRIVATE
     zmq
     )
+
+add_executable(ip ip.cpp)
