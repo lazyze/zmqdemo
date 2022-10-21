@@ -18,7 +18,7 @@ int main (void)
     /// // 2.创建、绑定套接字
     // ZMQ_REP 服务使用ZMQ_REP类型的套接字来接收来自客户端的请求并向客户端发送回复
     void *responder = zmq_socket (context, ZMQ_REP);
-    int rc = zmq_bind (responder, "tcp://*:5555");
+    int rc = zmq_bind (responder, "tcp://localhost:5556");
     assert (rc == 0);
 
     /// 3.循环接收数据、发送数据

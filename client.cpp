@@ -11,7 +11,7 @@ int main (void)
     /// 2.创建、绑定套接字
     // ZMQ_REQ  客户端使用ZMQ_REQ类型的套接字向服务发送请求并从服务接收答复
     void *requester = zmq_socket (context, ZMQ_REQ);
-    zmq_connect (requester, "tcp://localhost:5555");
+    zmq_connect (requester, "tcp://localhost:5556");
 
     ///3.循环发送数据、接收数据
     int request_nbr;
