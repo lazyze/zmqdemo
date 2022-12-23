@@ -5,7 +5,8 @@
 
 int main (void)
 {
-    #if 0
+    //
+    #if 1
     #pragma region
     printf ("Connecting to hello world server...\n");
     /// 1、创建上下文
@@ -25,7 +26,7 @@ int main (void)
         zmq_send (requester, "Hello", 5, 0);
         // 5.接收回复数据
         zmq_recv (requester, buffer, 10, 0);
-        printf ("Received World %d\n", request_nbr);
+        printf ("Received World %s %d\n", buffer, request_nbr);
     }
     /// 6.关闭套接字、销毁上下文
     zmq_close (requester);
@@ -33,7 +34,9 @@ int main (void)
     #pragma endregion
     #endif
 
-
+    //模拟停止、关闭、开始、连接操作
+    #if 0
+    #pragma region
      /// 1、创建上下文
     void *context = zmq_ctx_new ();   // 创建 0MQ上下文  线程安全的
 
@@ -87,5 +90,7 @@ int main (void)
     /// 6.关闭套接字、销毁上下文
     zmq_close (requester);
     zmq_ctx_destroy (context);
+    #pragma endregion
+    #endif
     return 0;
 }
