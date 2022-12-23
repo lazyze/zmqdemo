@@ -15,7 +15,7 @@ int main (void)
     // ZMQ_REQ  客户端使用ZMQ_REQ类型的套接字向服务发送请求并从服务接收答复
     void *g_log_socket = zmq_socket (context, ZMQ_PULL);
     // int rc = zmq_connect (g_log_socket, "tcp://localhost:5661");
-    int rc = zmq_bind (g_log_socket, "tcp://*:5561");
+    int rc = zmq_bind (g_log_socket, "tcp://*:8000");
     if (rc == -1) perror("通过 perror 输出错误");
     assert(rc == 0);
 
