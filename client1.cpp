@@ -2,7 +2,7 @@
  * @Author: lize GW00301491@ifyou.com
  * @Date: 2022-12-23 12:29:47
  * @LastEditors: lize GW00301491@ifyou.com
- * @LastEditTime: 2022-12-23 16:30:40
+ * @LastEditTime: 2022-12-23 16:57:59
  * @FilePath: /test/home/lize/code/zmqdemo/client1.cpp
  * @Description: 多客户端
  * 
@@ -14,11 +14,17 @@
 #include <string.h>
 #include <string>
 #include <assert.h>
+#include <signal.h>
 
 using namespace std;
 
+void signal_handler(int sig) {
+    
+}
+
 int main (int argc, char **argv)
 {
+    signal(SIGINT, signal_handler);
     #if 1
     #pragma region
     printf ("Connecting to server...\n");
@@ -59,7 +65,7 @@ int main (int argc, char **argv)
     zmq_recv(requester, sub_buf, sizeof(sub_buf), 0);
     printf ("接收到服务器sub回复消息: %s...\n", sub_buf);
 
-    sleep(5);
+    sleep(1);
     zmq_send (pub_socket, "cmd:begin", 9, 0);
 
     ///3.循环pull数据

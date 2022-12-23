@@ -2,7 +2,7 @@
  * @Author: lize GW00301491@ifyou.com
  * @Date: 2022-12-21 17:52:21
  * @LastEditors: lize GW00301491@ifyou.com
- * @LastEditTime: 2022-12-23 15:48:00
+ * @LastEditTime: 2022-12-23 16:49:13
  * @FilePath: /test/home/lize/code/zmqdemo/server1.cpp
  * @Description: 支持多客户端同时在线
  *
@@ -167,7 +167,7 @@ int main (void)
                 }
             }
         }
-        sleep(3);
+        sleep(1);
     }
     #pragma endregion
     #endif
