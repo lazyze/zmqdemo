@@ -41,11 +41,13 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
 add_executable(client1 client1.cpp)
 target_link_libraries(client1 PRIVATE
     zmq
+    pthread
     )
 
 add_executable(server1 server1.cpp)
 target_link_libraries(server1 PRIVATE
     zmq
+    pthread
     )
 
 # add_executable(ip ip.cpp)

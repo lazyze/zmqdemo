@@ -2,7 +2,7 @@
  * @Author: lize GW00301491@ifyou.com
  * @Date: 2022-12-23 12:29:47
  * @LastEditors: lize GW00301491@ifyou.com
- * @LastEditTime: 2022-12-23 16:57:59
+ * @LastEditTime: 2023-01-03 13:21:56
  * @FilePath: /test/home/lize/code/zmqdemo/client1.cpp
  * @Description: 多客户端
  * 
@@ -15,6 +15,8 @@
 #include <string>
 #include <assert.h>
 #include <signal.h>
+#include <thread>
+#include <pthread.h>
 
 using namespace std;
 
@@ -22,9 +24,19 @@ void signal_handler(int sig) {
     
 }
 
+void *pub_socket;
+void *thread_function_heart(void *arg) {
+    while (1) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(900));
+        //发送心跳
+        zmq_send (pub_socket, "cmd:heart", 9, 0);
+    }
+
+}
+
 int main (int argc, char **argv)
 {
-    signal(SIGINT, signal_handler);
+    // signal(SIGINT, signal_handler);
     #if 1
     #pragma region
     printf ("Connecting to server...\n");
@@ -53,7 +65,7 @@ int main (int argc, char **argv)
     printf ("接收到服务器push回复消息: %s...\n", push_buf);
 
     //创建pub套接字
-    void *pub_socket = zmq_socket (context, ZMQ_PUB);
+    pub_socket = zmq_socket (context, ZMQ_PUB);
     ip = "tcp://192.168.61.5:" + std::string(argv[2]);
     const char * pub_ip = ip.c_str();
     ret = zmq_bind (pub_socket, pub_ip);
@@ -67,7 +79,9 @@ int main (int argc, char **argv)
 
     sleep(1);
     zmq_send (pub_socket, "cmd:begin", 9, 0);
-
+    //心跳线程
+    pthread_t thread_heart;
+    pthread_create(&thread_heart, NULL, thread_function_heart, NULL);
     ///3.循环pull数据
     int num = 0;
     while (1) {
@@ -83,10 +97,10 @@ int main (int argc, char **argv)
         }
 
 
-        if(num == 60) {
-            zmq_send (pub_socket, "cmd:close", 9, 0);
-            break;
-        }
+        // if(num == 60) {
+        //     zmq_send (pub_socket, "cmd:close", 9, 0);
+        //     break;
+        // }
     }
     /// 6.关闭套接字、销毁上下文
     zmq_close (requester);

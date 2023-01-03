@@ -2,7 +2,7 @@
  * @Author: lize GW00301491@ifyou.com
  * @Date: 2022-12-21 17:52:21
  * @LastEditors: lize GW00301491@ifyou.com
- * @LastEditTime: 2022-12-23 16:49:13
+ * @LastEditTime: 2023-01-03 13:22:58
  * @FilePath: /test/home/lize/code/zmqdemo/server1.cpp
  * @Description: 支持多客户端同时在线
  *
@@ -19,9 +19,12 @@
 using namespace std;
 
 #define CLIENT_NUM 3
+#define HEARTBEAT_LIVENESS 3
+#define HEARTBEAT_INTERVAL 1000 //毫秒
 void* push_socket[CLIENT_NUM];
 void* sub_socket[CLIENT_NUM];
 bool push_flag[CLIENT_NUM];
+int liveness[CLIENT_NUM];
 int sendNum = 0;
 
 void itemAdd(zmq_pollitem_t& item, void* socket) {
@@ -93,7 +96,7 @@ int main (void)
         //给每个连接的客户端发消息
         sendMessage(num++);
 
-        ret = zmq_poll(items, CLIENT_NUM + 1, 0);
+        ret = zmq_poll(items, CLIENT_NUM + 1, HEARTBEAT_INTERVAL);
         if (ret < 0) {
             printf("zmq_poll返回值为%d\n", ret);
             break;
@@ -150,6 +153,7 @@ int main (void)
                 if (strcmp(cmd_op_info, "begin") == 0) {  //开始接收
                     printf("接收到开始接收信息\n");
                     push_flag[i] = true;
+                    liveness[i] = HEARTBEAT_LIVENESS;
                 } else if (strcmp(cmd_op_info, "stop") == 0) {   //暂停接收
                     printf("接收到暂停接收信息\n");
                     push_flag[i] = false;
@@ -160,12 +164,25 @@ int main (void)
                     push_flag[i] = false;
                     sub_socket[i] = NULL;
                     items[i].socket = NULL;
-                    printf("客户端%d关闭\n", i);
+                    printf("接收到close命令,客户端%d关闭\n", i);
                     sleep(5);
+                } else if (strcmp(cmd_op_info, "heart") == 0) {  //模仿关闭client
+                    liveness[i] = HEARTBEAT_LIVENESS;
                 } else {
                     printf("无效指令\n");
                 }
+            } else if (--liveness[i] == 0) {
+                //检测活跃度
+                zmq_close(push_socket[i]);
+                zmq_close(sub_socket[i]);
+                push_socket[i] = NULL;
+                push_flag[i] = false;
+                sub_socket[i] = NULL;
+                items[i].socket = NULL;
+                printf("模拟异常退出关闭进程, 客户端%d关闭\n", i);
+                // sleep(5);
             }
+            // printf();
         }
         sleep(1);
     }
