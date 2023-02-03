@@ -50,4 +50,16 @@ target_link_libraries(server1 PRIVATE
     pthread
     )
 
+# add_executable(server2 server2.cpp)
+# target_link_libraries(server2 PRIVATE
+#     zmq
+#     pthread
+#     )
+
+add_executable(server3 server3.cpp)
+target_link_libraries(server3 PRIVATE
+    zmq
+    pthread
+    )
+
 # add_executable(ip ip.cpp)

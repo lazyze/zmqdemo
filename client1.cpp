@@ -2,7 +2,7 @@
  * @Author: lize GW00301491@ifyou.com
  * @Date: 2022-12-23 12:29:47
  * @LastEditors: lize GW00301491@ifyou.com
- * @LastEditTime: 2023-01-03 13:21:56
+ * @LastEditTime: 2023-02-02 16:18:28
  * @FilePath: /test/home/lize/code/zmqdemo/client1.cpp
  * @Description: 多客户端
  * 
@@ -21,13 +21,12 @@
 using namespace std;
 
 void signal_handler(int sig) {
-    
 }
 
 void *pub_socket;
 void *thread_function_heart(void *arg) {
     while (1) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(900));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         //发送心跳
         zmq_send (pub_socket, "cmd:heart", 9, 0);
     }
@@ -46,14 +45,14 @@ int main (int argc, char **argv)
     /// 2.创建、绑定套接字
     // ZMQ_REQ  客户端使用ZMQ_REQ类型的套接字向服务发送请求并从服务接收答复
     void *requester = zmq_socket (context, ZMQ_REQ);
-    zmq_connect (requester, "tcp://localhost:8000");
+    zmq_connect (requester, "tcp://10.66.150.1:8000");
     char push_buf[64] = "";
     char sub_buf[64] = "";
 
     //创建pull套接字
     void *pull_socket = zmq_socket (context, ZMQ_PULL);
 
-    string ip = "tcp://192.168.61.5:" + std::string(argv[1]);
+    string ip = "tcp://10.66.150.1:" + std::string(argv[1]);
     const char * pull_ip = ip.c_str();
     int ret = zmq_bind (pull_socket, pull_ip);
     assert(ret == 0);
@@ -61,12 +60,13 @@ int main (int argc, char **argv)
     printf ("发送pull的ip和端口 %s...\n", pull_ip);
     zmq_send (requester, pull_ip, strlen(pull_ip), 0);
 
+
     zmq_recv(requester, push_buf, sizeof(push_buf), 0);
     printf ("接收到服务器push回复消息: %s...\n", push_buf);
 
     //创建pub套接字
     pub_socket = zmq_socket (context, ZMQ_PUB);
-    ip = "tcp://192.168.61.5:" + std::string(argv[2]);
+    ip = "tcp://10.66.150.1:" + std::string(argv[2]);
     const char * pub_ip = ip.c_str();
     ret = zmq_bind (pub_socket, pub_ip);
     assert(ret == 0);
@@ -92,10 +92,10 @@ int main (int argc, char **argv)
         num++;
         if(num == 20) {
             zmq_send (pub_socket, "cmd:stop", 8, 0);
-            sleep(25);
+            sleep(10);
             zmq_send (pub_socket, "cmd:begin", 9, 0);
         }
-
+        num %= 1000000;
 
         // if(num == 60) {
         //     zmq_send (pub_socket, "cmd:close", 9, 0);
