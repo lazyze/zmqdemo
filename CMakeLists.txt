@@ -56,8 +56,8 @@ target_link_libraries(server1 PRIVATE
 #     pthread
 #     )
 
-add_executable(server3 server3.cpp)
-target_link_libraries(server3 PRIVATE
+add_executable(serverProxy serverProxy.cpp)
+target_link_libraries(serverProxy PRIVATE
     zmq
     pthread
     )
